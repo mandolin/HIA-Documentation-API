@@ -10,6 +10,8 @@ Build the [main repository](https://github.com/mandolin/HIA-Documentation) and i
 
 This repository's `snapshot.json` pins a release archive, source revisions, file totals and digests. The manually dispatched Pages workflow downloads that archive and its build report, verifies every ordinary file, both language indexes and their direct targets, then deploys the checked site. A failed validation leaves the previous Pages deployment available.
 
+The pinned archive includes an empty `.nojekyll` marker. GitHub's Pages upload action excludes dotfiles, so the uploaded site contains one fewer file with identical content bytes. All documentation, maps, indexes and theme assets are retained. [Upload action packaging](https://github.com/actions/upload-pages-artifact/blob/v4/action.yml).
+
 To update the site, build from committed sources, archive only the files listed in the report, attach the archive and report to a uniquely named `core-api-<source-sha>` release, update `snapshot.json`, and dispatch **Core API Reference Pages**. To roll back, restore the earlier snapshot manifest and dispatch the workflow. Preserve release assets referenced by manifests.
 
 ## Scope and versions

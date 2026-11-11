@@ -30,7 +30,6 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ runner.temp }}/site
-          include-hidden-files: true
 
   deploy:
     needs: prepare
