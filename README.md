@@ -2,7 +2,9 @@
 
 Browse the HIA-generated [Chinese API reference](https://mandolin.github.io/HIA-Documentation-API/zh-CN/) or [English API reference](https://mandolin.github.io/HIA-Documentation-API/en/).
 
-This site provides module documentation from thirteen core HIA packages. HIA generates signatures, fields, localization and native source maps from their actual public declarations. Resource entries, command entries and satellite packages have separate adoption inventories. Source-text reading follows explicit authorization, and missing source text remains an explicit state.
+This site provides module documentation from thirteen core HIA packages and the two public plugin SDK JSON resources. HIA generates signatures, fields, localization and native source maps from their actual public declarations. Further resources, command entries and satellite packages have separate adoption inventories. Source-text reading follows explicit authorization, and missing source text remains an explicit state.
+
+The JSON resources retain 526 original values, 59 lexical reference occurrences, full snapshots and exact source maps through JSONdoc. Source previews are limited to the two reviewed distribution files, with a 400-line window and separate complete declaration ranges. Resource content uses locale `und`; interface language remains independently selectable.
 
 ## Reproduce and publish
 
@@ -10,7 +12,7 @@ Build the [main repository](https://github.com/mandolin/HIA-Documentation) and i
 
 This repository's `snapshot.json` pins a release archive, source revisions, file totals and digests. The manually dispatched Pages workflow downloads that archive and its build report, verifies every ordinary file, both language indexes and their direct targets, then deploys the checked site. A failed validation leaves the previous Pages deployment available.
 
-The pinned archive includes an empty `.nojekyll` marker. GitHub's Pages upload action excludes dotfiles, so the uploaded site contains one fewer file with identical content bytes. All documentation, maps, indexes and theme assets are retained. [Upload action packaging](https://github.com/actions/upload-pages-artifact/blob/v4/action.yml).
+The pinned archive includes an empty `.nojekyll` marker and, when source assets are present, fixed locale-root `.gitattributes` files protecting source-text bytes in Git. GitHub's Pages upload action excludes dotfiles. The uploaded site retains every documentation page, map, index, source and theme asset byte; packaging metadata exclusions are counted separately. [Upload action packaging](https://github.com/actions/upload-pages-artifact/blob/v4/action.yml).
 
 To update the site, build from committed sources, archive only the files listed in the report, attach the archive and report to a uniquely named `core-api-<source-sha>` release, update `snapshot.json`, and dispatch **Core API Reference Pages**. To roll back, restore the earlier snapshot manifest and dispatch the workflow. Preserve release assets referenced by manifests.
 
@@ -18,7 +20,7 @@ To update the site, build from committed sources, archive only the files listed 
 
 The current documentation is a preview of the first formal system release. Package versions, source commits and artifact-contract versions remain distinct identities. Existing reference routes in the main repository and the [legacy reference site](https://mandolin.github.io/HIA-Documentation-Legacy/) remain independently available.
 
-中文。本站是 HIA 自身生成的十三核心包模块参考，提供中英文入口、完整原生工件与静态条目。构建副本与来源报告独立保存，源码正文权限单独核验。发布清单固定工件及来源提交，工作流逐文件核验后部署。系统文档当前仍为正式初版预览。
+中文。本站由 HIA 自身生成十三核心包模块与插件SDK两份JSON资源参考，提供中英文界面、完整原生工件与静态条目。JSON资源保留526值和精确来源，正文语言为und。构建副本与来源报告独立保存，源码正文权限单独核验。发布清单固定工件及来源提交，工作流逐文件核验后部署。系统文档当前仍为正式初版预览。
 
 ## License
 

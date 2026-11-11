@@ -1,15 +1,20 @@
 {
   "repository": "mandolin/HIA-Documentation",
-  "commit": "285a368166ec202e794e87ed47f09b7d9ff56fcf",
+  "commit": "dfd7c8f8720b0238e01456fdaa7bebc3d22473b4",
   "producerRepository": "mandolin/hia-tsdoc",
   "producerCommit": "d40bb81589997ed706f0fe16aa258637b78e0079",
-  "tag": "core-api-285a368",
-  "asset": "core-api-285a368.tar.gz",
-  "gzipSha256": "0fb686191322b68021567ae35df8b9b1c5b5a88b55a4afa09217c5ea93daa0d4",
-  "tarSha256": "e7f0ca2025d4ffa38f764820a82e31fa8d0c7f61871057b13991391a391d1e0b",
-  "tarBytes": 857978880,
-  "reportSha256": "0547a9267150084cfacbe6ec55c2a1e50bec50a1124cfe8060445e4ea9575f06",
-  "files": 44098,
-  "bytes": 806777336,
-  "entriesPerLocale": 5043
+  "tag": "core-api-dfd7c8f",
+  "asset": "core-api-dfd7c8f.tar.gz",
+  "gzipSha256": "23071631f75252c9c72f1bb2bec8ff62f954b51d197b602ef4ae4bc9f5cfb3e2",
+  "tarSha256": "1f4cbcc4e6b03fb4aacf633743e2ad6e1b21f044b48e01ad42b463536a86b006",
+  "tarBytes": 941946880,
+  "reportSha256": "c2bc52c3ca40dd088e65945af616facbc8faaec7f16b568ddaf092d92c3a207f",
+  "files": 50000,
+  "bytes": 884310703,
+  "entriesPerLocale": 5569,
+  "resourcePackages": [
+    "@hia-doc/plugin-sdk"
+  ],
+  "resourceEntries": 2,
+  "resourceValuesPerLocale": 526
 }

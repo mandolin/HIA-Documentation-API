@@ -27,11 +27,11 @@ def valid_path(name):
     route = PurePosixPath(name)
     return (name == route.as_posix() and not route.is_absolute()
             and '..' not in route.parts and not any(char in name for char in '\\:%?#')
-            and all(not part.startswith('.') or name == '.nojekyll' for part in route.parts)
+            and all(not part.startswith('.') or name in ('.nojekyll', 'en/.gitattributes', 'zh-CN/.gitattributes') for part in route.parts)
             and route.parts[0] in ('en', 'zh-CN', 'index.html', '.nojekyll'))
 
 
-def check_site(site, expected_entries):
+def check_site(site, expected_entries, resources=()):
     """核验双语索引与所有条目目标，禁止遗漏原生地图。 Check bilingual indexes and every entry target, retaining native maps."""
     for locale in ('en', 'zh-CN'):
         root = site / locale
@@ -49,6 +49,22 @@ def check_site(site, expected_entries):
                 require(valid_path(locale + '/' + route) and (root / route).is_file(), 'Missing API entry target.')
         report = json.loads((root / 'documentation-ui-locale-completeness.json').read_text(encoding='utf-8'))
         require(report['status'] == 'complete', 'Incomplete interface messages.')
+        for resource in resources:
+            # <lang zh-CN>资源声明单独核对，完整模块总数不能掩盖资源遗漏。</lang><lang en>Check resource declarations independently so module totals cannot conceal missing resource values.</lang>
+            entries = [entry for entry in index['entries']
+                       if entry.get('input', {}).get('path') == resource['prefix'] + '/resource-001.hia.json']
+            require(len(entries) == resource['values'], 'Incomplete resource value coverage.')
+            snapshot = resource['prefix'] + '/resource-001.source.json'
+            require(valid_path(locale + '/' + snapshot)
+                    and (root / snapshot).is_file()
+                    and digest(root / snapshot) == resource['sha256'], 'Unexpected resource source snapshot.')
+            for entry in entries:
+                source = entry.get('source', {})
+                require(source.get('path') == resource['source'], 'Unexpected resource source identity.')
+                for key in ('fetchUrl', 'linkUrl'):
+                    target = source.get(key, '').split('#')[0]
+                    require(target and valid_path(locale + '/' + target)
+                            and (root / target).is_file(), 'Missing resource source target.')
 
 
 def prepare(snapshot, archive, report_path, output):
@@ -63,6 +79,16 @@ def prepare(snapshot, archive, report_path, output):
             and report['sourceCommit'] == snapshot['commit']
             and report['producerCommit'] == snapshot['producerCommit'], 'Unexpected source revisions.')
     require(len(report['packages']) == 13 and len(set(report['packages'])) == 13, 'Unexpected package scope.')
+    # <lang zh-CN>旧模块归档省略资源字段；新版清单显式固定资源范围与逐语言值数。</lang><lang en>Legacy module archives omit resource fields; newer manifests explicitly pin resource scope and per-locale value counts.</lang>
+    resources = report.get('resources', [])
+    require(report.get('resourcePackages', []) == snapshot.get('resourcePackages', [])
+            and len(resources) == snapshot.get('resourceEntries', 0)
+            and sum(row['values'] for row in resources) == snapshot.get('resourceValuesPerLocale', 0)
+            and set(row['package'] for row in resources) == set(report.get('resourcePackages', [])),
+            'Unexpected resource scope.')
+    if resources:
+        require(sorted(report.get('sourcePolicy', {}).get('paths', []))
+                == sorted(row['source'] for row in resources), 'Unexpected resource source policy.')
     expected = {item['path']: item for item in report['inventory']}
     require(len(expected) == len(report['inventory']) == snapshot['files'] == report['files']
             and report['bytes'] == snapshot['bytes'], 'Unexpected report inventory.')
@@ -93,10 +119,12 @@ def prepare(snapshot, archive, report_path, output):
                 with bundle.extractfile(member) as source, target.open('xb') as destination:
                     shutil.copyfileobj(source, destination)
                 require(digest(target) == expected[name]['sha256'], 'Published file digest mismatch.')
+                if name in ('en/.gitattributes', 'zh-CN/.gitattributes'):
+                    require(target.read_bytes() == b'sources/*.txt -text\n', 'Unexpected source attributes.')
                 seen.add(name)
                 total += member.size
         require(seen == expected.keys() and total == snapshot['bytes'], 'Incomplete snapshot.')
-        check_site(stage, snapshot['entriesPerLocale'])
+        check_site(stage, snapshot['entriesPerLocale'], resources)
         stage.rename(output)
     print(f'Validated {len(seen)} files and {total} bytes at {snapshot["commit"]}.')
 
