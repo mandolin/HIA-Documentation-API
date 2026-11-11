@@ -1,0 +1,46 @@
+name: Core API Reference Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-api-reference-pages
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check archive-validation regressions
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - name: Download and validate the pinned API snapshot
+        run: |
+          tag=$(jq -er .tag snapshot.json)
+          asset=$(jq -er .asset snapshot.json)
+          [[ "$tag" =~ ^core-api-[0-9a-f]{7,40}$ && "$asset" =~ ^core-api-[0-9a-f]{7,40}\.tar\.gz$ ]]
+          curl --fail --silent --show-error --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/reference.tar.gz" "https://github.com/mandolin/HIA-Documentation-API/releases/download/$tag/$asset"
+          curl --fail --silent --show-error --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/build-report.json" "https://github.com/mandolin/HIA-Documentation-API/releases/download/$tag/build-report.json"
+          python3 scripts/prepare.py snapshot.json "$RUNNER_TEMP/reference.tar.gz" "$RUNNER_TEMP/build-report.json" "$RUNNER_TEMP/site"
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/site
+          include-hidden-files: true
+
+  deploy:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

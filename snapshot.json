@@ -1,0 +1,15 @@
+{
+  "repository": "mandolin/HIA-Documentation",
+  "commit": "285a368166ec202e794e87ed47f09b7d9ff56fcf",
+  "producerRepository": "mandolin/hia-tsdoc",
+  "producerCommit": "d40bb81589997ed706f0fe16aa258637b78e0079",
+  "tag": "core-api-285a368",
+  "asset": "core-api-285a368.tar.gz",
+  "gzipSha256": "0fb686191322b68021567ae35df8b9b1c5b5a88b55a4afa09217c5ea93daa0d4",
+  "tarSha256": "e7f0ca2025d4ffa38f764820a82e31fa8d0c7f61871057b13991391a391d1e0b",
+  "tarBytes": 857978880,
+  "reportSha256": "0547a9267150084cfacbe6ec55c2a1e50bec50a1124cfe8060445e4ea9575f06",
+  "files": 44098,
+  "bytes": 806777336,
+  "entriesPerLocale": 5043
+}
