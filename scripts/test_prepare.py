@@ -13,6 +13,13 @@ from prepare import digest, prepare, valid_path, check_site
 class PublicationTests(unittest.TestCase):
     """通过小型工件核拒绝路径，不冒充真实 API 生成验收。 Check rejection paths with small artifacts without claiming API production coverage."""
 
+    def test_shared_root_assets(self):
+        """根目录只增加指定主题二件，旧目录和拒绝路径保持。 Admit only the named theme pair at root, retaining legacy paths and rejections."""
+        for name in ('assets/hia-default.css', 'assets/hia-default.js', 'en/assets/hia-default.css'):
+            self.assertTrue(valid_path(name), name)
+        for name in ('assets/runtime.json', 'assets/nested/hia-default.css', 'assets/../hia-default.js', 'assets/.secret'):
+            self.assertFalse(valid_path(name), name)
+
     def setUp(self):
         """为每例创建独立归档和报告。 Create isolated archives and reports for every case."""
         self.scratch = tempfile.TemporaryDirectory()

@@ -23,12 +23,13 @@ def digest(file):
 
 
 def valid_path(name):
-    """只接受两语言和根入口的普通相对路径。 Accept ordinary relative paths under both locales and root entries."""
+    """只接受两语言、根入口及固定共享主题二件的普通相对路径。 Accept ordinary relative paths under both locales, root entries and the fixed shared theme pair."""
     route = PurePosixPath(name)
     return (name == route.as_posix() and not route.is_absolute()
             and '..' not in route.parts and not any(char in name for char in '\\:%?#')
             and all(not part.startswith('.') or name in ('.nojekyll', 'en/.gitattributes', 'zh-CN/.gitattributes') for part in route.parts)
-            and route.parts[0] in ('en', 'zh-CN', 'index.html', '.nojekyll'))
+            and (route.parts[0] in ('en', 'zh-CN', 'index.html', '.nojekyll')
+                 or name in ('assets/hia-default.css', 'assets/hia-default.js')))
 
 
 def check_site(site, expected_entries, resources=()):
